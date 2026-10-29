@@ -15,7 +15,7 @@ How TraderPulse runs in production, how to redeploy each half, and the smoke tes
 | Image | `northamerica-south1-docker.pkg.dev/ai-native-dev-513023/traderpulse/traderpulse-api:<tag>` |
 | Runtime identity | `traderpulse-api-sa@ai-native-dev-513023.iam.gserviceaccount.com` |
 | Secret | `traderpulse-gemini-key` (Secret Manager) → env `GEMINI_API_KEY` |
-| Resources | 1 CPU / 512 MiB, `--allow-unauthenticated` |
+| Resources | 1 CPU / 512 MiB, 0–2 instances (scales to zero; capped to bound cost), `--allow-unauthenticated` |
 
 Backend environment on Cloud Run:
 
@@ -68,7 +68,7 @@ gcloud run deploy traderpulse-api \
   --image=northamerica-south1-docker.pkg.dev/$PROJECT_ID/traderpulse/traderpulse-api:$TAG \
   --region=northamerica-south1 \
   --service-account=traderpulse-api-sa@$PROJECT_ID.iam.gserviceaccount.com \
-  --memory=512Mi --cpu=1 \
+  --memory=512Mi --cpu=1 --max-instances=2 \
   --set-secrets=GEMINI_API_KEY=traderpulse-gemini-key:latest \
   --set-env-vars=ENVIRONMENT=production,FRONTEND_URL=https://traderpulse-ten.vercel.app \
   --allow-unauthenticated

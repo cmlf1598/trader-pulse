@@ -271,7 +271,7 @@ gcloud run deploy traderpulse-api \
   --region $REGION --service-account $SA --allow-unauthenticated \
   --set-env-vars ENVIRONMENT=production,FRONTEND_URL=https://traderpulse-ten.vercel.app \
   --set-secrets GEMINI_API_KEY=traderpulse-gemini-key:latest \
-  --cpu 1 --memory 512Mi
+  --cpu 1 --memory 512Mi --max-instances 2
 ```
 
 The live environment and post-deploy smoke tests are in [docs/DEPLOYMENT.md](../docs/DEPLOYMENT.md).

@@ -14,13 +14,28 @@ def earned(service: GamificationService) -> set[str]:
 def test_demo_profile_is_seeded() -> None:
     status = GamificationService().status()
 
-    assert status.points == 120
-    assert status.level == 2
+    assert status.points == 30
+    assert status.level == 1
+    assert status.level_name == "Novato"
+    assert status.current_level_points == 0
+    assert status.next_level_points == 50
+    assert status.progress == pytest.approx(0.6)
+    assert status.points_per_analysis == POINTS_PER_ANALYSIS
+    assert {b.id for b in status.badges if b.earned} == {"first_analysis"}
+
+
+async def test_two_more_analyses_unlock_bull_market_expert_and_level_up() -> None:
+    service = GamificationService()
+
+    await service.record_analysis("TSLA")
+    assert "bull_market_expert" not in earned(service)
+
+    await service.record_analysis("AMZN")
+    status = service.status()
+
+    assert status.analyses_count == 5
     assert status.level_name == "Analista"
-    assert status.current_level_points == 50
-    assert status.next_level_points == 150
-    assert status.progress == pytest.approx(0.7)
-    assert "first_analysis" in {b.id for b in status.badges if b.earned}
+    assert "bull_market_expert" in earned(service)
 
 
 async def test_recording_an_analysis_awards_points() -> None:
@@ -66,6 +81,7 @@ async def test_badges_unlock_from_activity() -> None:
 
     assert earned(service) == {
         "first_analysis",
+        "bull_market_expert",
         "consistent",
         "explorer",
         "crypto_curious",

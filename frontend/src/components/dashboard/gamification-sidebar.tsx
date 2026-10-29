@@ -7,6 +7,7 @@ import {
   Flame,
   Lock,
   Sparkles,
+  TrendingUp,
   Trophy,
   type LucideIcon,
 } from "lucide-react";
@@ -20,6 +21,7 @@ import { cn } from "@/lib/utils";
 
 const BADGE_ICONS: Record<string, LucideIcon> = {
   first_analysis: Sparkles,
+  bull_market_expert: TrendingUp,
   consistent: Flame,
   explorer: Compass,
   crypto_curious: Coins,

@@ -13,7 +13,7 @@ Next.js 16 dashboard (Spanish UI, dark theme) for real-time market analysis. It 
 - **Symbol search.** Accepts any Yahoo symbol (normalized to upper case). It validates locally, then **confirms with the backend** before adding. Unknown symbols raise the toast "Símbolo no encontrado: XYZ".
 - **Price chart.** Recharts area chart with 1D / 5D / 1M / 6M / 1A ranges, Spanish-locale axes and tooltip, and a gradient that is green or red by period trend.
 - **AI sentiment widget.** Gemini verdict color-coded as Alcista (emerald), Bajista (rose) or Neutral (amber), with a confidence meter, justification, key factors, linked headlines, model and timestamp, an "En caché" badge and a **Reanalizar** button.
-- **Gamification sidebar.** "Nivel de Inversionista" with progress to the next level, "Puntos de Análisis", and earned and locked badges. It updates after each fresh analysis.
+- **Gamification sidebar.** "Nivel de Inversionista" with progress to the next level, "Puntos de Análisis", and earned and locked badges. Points update optimistically the moment a stock is selected, then reconcile with the server; fresh analyses raise "¡XP ganada!", level-up and badge-unlocked toasts.
 - **Error UX.** Every API failure produces a Sonner toast with the backend's Spanish message, deduplicated per data source, plus an inline error state in the affected widget. Nothing is faked.
 - **Real-time polling** every 60s (configurable), shared across components through SWR's cache.
 - **Fail-fast configuration.** Zod validates the environment when `next dev` or `next build` starts.
@@ -118,15 +118,16 @@ The dark palette is defined on `.dark`. `<html>` always has the `dark` class.
 
 There are 66 tests in `src/__tests__/`. `fetch` is stubbed per test, so nothing hits the network.
 
-| File                            | Covers                                                                                                                                                      |
-| ------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `env.test.ts`                   | URL and poll-interval validation, defaults, coercion                                                                                                        |
-| `api-client.test.ts`            | Success parsing, error envelope → `ApiError`, `Retry-After`, non-JSON errors, network errors, contract violations, URL encoding                             |
-| `data-hooks.test.tsx`           | `useQuote` (success, 404 + toast, disabled), `useHistory`, `useSentiment` (points revalidation, cached, `reanalyze` success and failure), `useGamification` |
-| `use-watchlist.test.ts`         | Immutable reducer semantics on frozen state, no-op identity, hook stability                                                                                 |
-| `swr-config.test.ts`            | Retry policy: none on 4xx, exponential backoff, `Retry-After`, max retries                                                                                  |
-| `ticker-tape.test.tsx`          | Live prices and trend, click → `onSelect`, a11y of the duplicated track, error placeholder                                                                  |
-| `stock-card.test.tsx`           | Success, loading, error, select and remove, selected state                                                                                                  |
-| `sentiment-widget.test.tsx`     | Color-coded verdicts per sentiment, details, cached badge, loading, error + toast (no fallback), Reanalizar                                                 |
-| `gamification-sidebar.test.tsx` | Level, points and badges, max level, loading, error                                                                                                         |
-| `symbol-search.test.tsx`        | Add after confirmation, 404 toast "Símbolo no encontrado", other failures, invalid format, existing symbol                                                  |
+| File                            | Covers                                                                                                                                                                         |
+| ------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `env.test.ts`                   | URL and poll-interval validation, defaults, coercion                                                                                                                           |
+| `api-client.test.ts`            | Success parsing, error envelope → `ApiError`, `Retry-After`, non-JSON errors, network errors, contract violations, URL encoding                                                |
+| `data-hooks.test.tsx`           | `useQuote` (success, 404 + toast, disabled), `useHistory`, `useSentiment` (optimistic points, rollback on cached/error, XP/level/badge toasts, `reanalyze`), `useGamification` |
+| `gamification.test.ts`          | Optimistic points/progress, progress cap, max level, newly earned badges                                                                                                       |
+| `use-watchlist.test.ts`         | Immutable reducer semantics on frozen state, no-op identity, hook stability                                                                                                    |
+| `swr-config.test.ts`            | Retry policy: none on 4xx, exponential backoff, `Retry-After`, max retries                                                                                                     |
+| `ticker-tape.test.tsx`          | Live prices and trend, click → `onSelect`, a11y of the duplicated track, error placeholder                                                                                     |
+| `stock-card.test.tsx`           | Success, loading, error, select and remove, selected state                                                                                                                     |
+| `sentiment-widget.test.tsx`     | Color-coded verdicts per sentiment, details, cached badge, loading, error + toast (no fallback), Reanalizar                                                                    |
+| `gamification-sidebar.test.tsx` | Level, points and badges, max level, loading, error                                                                                                                            |
+| `symbol-search.test.tsx`        | Add after confirmation, 404 toast "Símbolo no encontrado", other failures, invalid format, existing symbol                                                                     |

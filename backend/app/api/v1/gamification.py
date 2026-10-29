@@ -6,6 +6,7 @@ from app.schemas.gamification import GamificationStatus
 router = APIRouter(prefix="/gamification", tags=["gamification"])
 
 
-@router.get("/status", summary="Demo user points, level and badges (in-memory mock)")
+@router.get("", summary="Demo user points, level and badges (in-memory mock)")
+@router.get("/status", summary="Demo user points, level and badges (alias)")
 async def get_status(gamification: GamificationServiceDep) -> GamificationStatus:
     return gamification.status()

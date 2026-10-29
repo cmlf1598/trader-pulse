@@ -46,6 +46,12 @@ BADGES = (
         lambda p: p.analyses_count >= 1,
     ),
     _BadgeRule(
+        "bull_market_expert",
+        "Experto en Mercado Alcista",
+        "Completa 5 análisis de sentimiento.",
+        lambda p: p.analyses_count >= 5,
+    ),
+    _BadgeRule(
         "consistent",
         "Analista constante",
         "Completa 10 análisis de sentimiento.",
@@ -71,8 +77,9 @@ BADGES = (
     ),
 )
 
-# Seed so the sidebar looks like an active user from the first load.
-DEMO_PROFILE = _Profile(points=120, analyses_count=9, symbols={"AAPL", "MSFT", "NVDA"})
+# Seed so the sidebar looks like an active user from the first load, while two more analyses
+# visibly unlock "Experto en Mercado Alcista" and level up to Analista during a demo.
+DEMO_PROFILE = _Profile(points=30, analyses_count=3, symbols={"AAPL", "MSFT", "NVDA"})
 
 
 class GamificationService:
@@ -105,6 +112,7 @@ class GamificationService:
             next_level_points=next_threshold,
             progress=round(progress, 4),
             analyses_count=profile.analyses_count,
+            points_per_analysis=POINTS_PER_ANALYSIS,
             badges=[
                 Badge(id=b.id, name=b.name, description=b.description, earned=b.earned(profile))
                 for b in BADGES

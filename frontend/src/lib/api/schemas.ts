@@ -58,6 +58,7 @@ export const gamificationSchema = z.object({
   next_level_points: z.number().int().nullable(),
   progress: z.number().min(0).max(1),
   analyses_count: z.number().int(),
+  points_per_analysis: z.number().int(),
   badges: z.array(
     z.object({ id: z.string(), name: z.string(), description: z.string(), earned: z.boolean() }),
   ),

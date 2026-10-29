@@ -191,14 +191,16 @@ async def test_sentiment_ai_failure_returns_502_without_points(
 # ---- gamification -------------------------------------------------------------------------
 
 
-async def test_gamification_status(client: AsyncClient) -> None:
-    response = await client.get("/api/v1/gamification/status")
+@pytest.mark.parametrize("path", ["/api/v1/gamification", "/api/v1/gamification/status"])
+async def test_gamification_status(client: AsyncClient, path: str) -> None:
+    response = await client.get(path)
 
     assert response.status_code == 200
     body = response.json()
-    assert body["level_name"] == "Analista"
-    assert body["points"] == 120
-    assert len(body["badges"]) == 5
+    assert body["level_name"] == "Novato"
+    assert body["points"] == 30
+    assert body["points_per_analysis"] == 10
+    assert len(body["badges"]) == 6
 
 
 # ---- cross-cutting ------------------------------------------------------------------------

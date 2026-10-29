@@ -1,6 +1,7 @@
 import { act, waitFor } from "@testing-library/react";
+import { useState } from "react";
 import { toast } from "sonner";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 
 import { useGamification } from "@/hooks/use-gamification";
 import { useHistory } from "@/hooks/use-history";
@@ -73,7 +74,20 @@ describe("useSentiment", () => {
   const gamificationCalls = (fetchMock: ReturnType<typeof stubApi>) =>
     requestedPaths(fetchMock).filter((p) => p.startsWith("/api/v1/gamification")).length;
 
-  it("loads the analysis and refreshes points after a fresh one", async () => {
+  // Points load first, then the symbol is selected, like a click in the running dashboard.
+  function renderSelection() {
+    let select: (symbol: string) => void = () => {};
+    const view = renderHookWithSWR(() => {
+      const [symbol, setSymbol] = useState<string | null>(null);
+      select = setSymbol;
+      return { points: useGamification(), sentiment: useSentiment(symbol) };
+    });
+    return { ...view, select: (symbol: string) => act(() => select(symbol)) };
+  }
+  const xpToasts = () =>
+    vi.mocked(toast.success).mock.calls.filter(([title]) => title === "¡XP ganada!");
+
+  it("loads the analysis, confirms points with the server and toasts XP", async () => {
     const fetchMock = stubApi((path) =>
       path.startsWith("/api/v1/gamification")
         ? json(gamificationFixture())
@@ -84,21 +98,100 @@ describe("useSentiment", () => {
 
     await waitFor(() => expect(result.current.data?.sentiment).toBe("bullish"));
     await waitFor(() => expect(gamificationCalls(fetchMock)).toBe(2));
+    expect(toast.success).toHaveBeenCalledWith("¡XP ganada!", {
+      description: "+10 Puntos de Análisis por analizar AAPL.",
+    });
   });
 
-  it("does not refresh points for a cached analysis", async () => {
+  it("credits points optimistically while the analysis is in flight", async () => {
+    let finish: (response: Response) => void = () => {};
+    stubApi((path) =>
+      path.startsWith("/api/v1/gamification")
+        ? json(gamificationFixture())
+        : new Promise<Response>((resolve) => (finish = resolve)),
+    );
+    const { result, select } = renderSelection();
+    await waitFor(() => expect(result.current.points.data?.points).toBe(120));
+
+    await select("AAPL");
+
+    await waitFor(() => expect(result.current.points.data?.points).toBe(130));
+    expect(result.current.points.data?.analyses_count).toBe(10);
+    expect(result.current.points.data?.progress).toBeCloseTo(0.8);
+    await act(async () => finish(json(sentimentFixture())));
+    await waitFor(() => expect(result.current.sentiment.data?.sentiment).toBe("bullish"));
+  });
+
+  it("rolls the optimistic points back for a cached analysis, without an XP toast", async () => {
     const fetchMock = stubApi((path) =>
       path.startsWith("/api/v1/gamification")
         ? json(gamificationFixture())
         : json(sentimentFixture("neutral", { cached: true })),
     );
+    const { result, select } = renderSelection();
+    await waitFor(() => expect(result.current.points.data?.points).toBe(120));
 
-    const { result } = renderHookWithSWR(() => useSentimentWithPoints("AAPL"));
+    await select("AAPL");
 
-    await waitFor(() => expect(result.current.data?.cached).toBe(true));
-    await waitFor(() => expect(gamificationCalls(fetchMock)).toBe(1));
-    await new Promise((resolve) => setTimeout(resolve, 50));
-    expect(gamificationCalls(fetchMock)).toBe(1);
+    await waitFor(() => expect(result.current.sentiment.data?.cached).toBe(true));
+    await waitFor(() => expect(gamificationCalls(fetchMock)).toBe(2));
+    await waitFor(() => expect(result.current.points.data?.points).toBe(120));
+    expect(xpToasts()).toHaveLength(0);
+  });
+
+  it("rolls the optimistic points back when the analysis fails", async () => {
+    const fetchMock = stubApi((path) =>
+      path.startsWith("/api/v1/gamification")
+        ? json(gamificationFixture())
+        : apiError(502, "ai_unavailable", "El análisis de IA no está disponible en este momento."),
+    );
+    const { result, select } = renderSelection();
+    await waitFor(() => expect(result.current.points.data?.points).toBe(120));
+
+    await select("AAPL");
+
+    await waitFor(() => expect(result.current.sentiment.error).toBeInstanceOf(ApiError));
+    await waitFor(() => expect(gamificationCalls(fetchMock)).toBe(2));
+    expect(result.current.points.data?.points).toBe(120);
+    expect(xpToasts()).toHaveLength(0);
+  });
+
+  it("announces level-ups and newly earned badges", async () => {
+    const before = gamificationFixture({ points: 40, level: 1, level_name: "Novato" });
+    const after = gamificationFixture({
+      points: 50,
+      level: 2,
+      level_name: "Analista",
+      badges: [
+        ...before.badges,
+        {
+          id: "bull_market_expert",
+          name: "Experto en Mercado Alcista",
+          description: "Completa 5 análisis de sentimiento.",
+          earned: true,
+        },
+      ],
+    });
+    let gamificationResponses = 0;
+    stubApi((path) =>
+      path.startsWith("/api/v1/gamification")
+        ? json(gamificationResponses++ === 0 ? before : after)
+        : json(sentimentFixture()),
+    );
+    const { result, select } = renderSelection();
+    await waitFor(() => expect(result.current.points.data?.points).toBe(40));
+
+    await select("AAPL");
+
+    await waitFor(() =>
+      expect(toast.success).toHaveBeenCalledWith(
+        "Insignia desbloqueada: Experto en Mercado Alcista",
+        { description: "Completa 5 análisis de sentimiento." },
+      ),
+    );
+    expect(toast.success).toHaveBeenCalledWith("¡Subiste de nivel!", {
+      description: "Ahora eres Analista (nivel 2).",
+    });
   });
 
   it("reanalyze() bypasses the cache and replaces the data", async () => {

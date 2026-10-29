@@ -50,7 +50,7 @@ backend/
 │   │       ├── health.py      # GET /health
 │   │       ├── stocks.py      # GET /stocks/{symbol}, /stocks/{symbol}/history
 │   │       ├── sentiment.py   # GET /sentiment/{symbol} (awards points on fresh analyses)
-│   │       ├── gamification.py# GET /gamification/status
+│   │       ├── gamification.py# GET /gamification (+ /status alias)
 │   │       └── responses.py   # OpenAPI docs for error responses
 │   ├── services/              # business logic + provider integrations
 │   │   ├── market_service.py  # yfinance wrapper: quotes, history, headlines; error translation

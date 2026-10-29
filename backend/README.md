@@ -170,25 +170,28 @@ AI sentiment analysis. Successful results are cached for `SENTIMENT_CACHE_TTL_SE
 
 Errors: 404 (unknown symbol; Gemini is not called), 422, 502 (`market_unavailable`, `ai_unavailable` or `ai_invalid_response`), 503, 504.
 
-### `GET /api/v1/gamification/status`
+### `GET /api/v1/gamification`
 
-The demo user's progress. In-memory: it resets on restart and is per instance.
+The demo user's progress (`/api/v1/gamification/status` is an alias). In-memory: it resets on restart and is per instance. The seed below is chosen so two more analyses unlock "Experto en Mercado Alcista" and reach level Analista.
 
 ```json
 {
-  "points": 120,
-  "level": 2,
-  "level_name": "Analista",
-  "current_level_points": 50,
-  "next_level_points": 150,
-  "progress": 0.7,
-  "analyses_count": 9,
+  "points": 30,
+  "level": 1,
+  "level_name": "Novato",
+  "current_level_points": 0,
+  "next_level_points": 50,
+  "progress": 0.6,
+  "analyses_count": 3,
+  "points_per_analysis": 10,
   "badges": [
     { "id": "first_analysis", "name": "Primer análisis", "description": "Solicita tu primer análisis de sentimiento.", "earned": true },
-    { "id": "consistent", "name": "Analista constante", "description": "Completa 10 análisis de sentimiento.", "earned": false }
+    { "id": "bull_market_expert", "name": "Experto en Mercado Alcista", "description": "Completa 5 análisis de sentimiento.", "earned": false }
   ]
 }
 ```
+
+`points_per_analysis` lets the frontend apply an optimistic award that matches the server's.
 
 | Level | Name | Points from |
 |---|---|---|
@@ -198,7 +201,7 @@ The demo user's progress. In-memory: it resets on restart and is per instance.
 | 4 | Experto | 300 |
 | 5 | Leyenda | 600 (`next_level_points: null`, `progress: 1`) |
 
-Badges: `first_analysis` (≥ 1 analysis), `consistent` (≥ 10), `explorer` (≥ 5 distinct symbols), `crypto_curious` (any `-USD` symbol) and `strategist` (≥ 150 points).
+Badges: `first_analysis` (≥ 1 analysis), `bull_market_expert` (≥ 5), `consistent` (≥ 10), `explorer` (≥ 5 distinct symbols), `crypto_curious` (any `-USD` symbol) and `strategist` (≥ 150 points).
 
 ---
 
@@ -210,7 +213,7 @@ There are 86 tests in `tests/`, and none of them use the network.
 |---|---|
 | `test_market_service.py` | Quote math, NaN or missing data → 404, rate limit, outage, timeout, history range mapping, NaN filtering, both news shapes |
 | `test_ai_service.py` | Structured parsing, cache hit, refresh and no caching of failures, a single Gemini call under concurrency, Gemini error mapping, invalid payloads, 404 before Gemini, best-effort headlines, trimming |
-| `test_gamification_service.py` | Seeded profile, points, level thresholds, max level, badge unlocking, seed isolation |
+| `test_gamification_service.py` | Seeded profile, points, level thresholds, max level, badge unlocking (incl. Bull Market Expert at 5), seed isolation |
 | `test_config.py` | Required `GEMINI_API_KEY` and `FRONTEND_URL`, blank key, env parsing, secret not leaked, https in production, port bounds, CORS origins |
 | `test_api.py` | Every endpoint and status code, error envelope, symbol normalization, points awarded only on fresh analyses, CORS allow and deny, `Retry-After` exposure, docs hidden in production |
 

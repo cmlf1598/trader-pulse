@@ -57,5 +57,5 @@ export const api = {
       `/api/v1/sentiment/${symbolPath(symbol)}${refresh ? "?refresh=true" : ""}`,
       sentimentSchema,
     ),
-  gamification: () => apiGet("/api/v1/gamification/status", gamificationSchema),
+  gamification: () => apiGet("/api/v1/gamification", gamificationSchema),
 };

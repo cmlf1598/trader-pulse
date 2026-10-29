@@ -16,4 +16,6 @@ class GamificationStatus(BaseModel):
     next_level_points: int | None
     progress: float
     analyses_count: int
+    # Lets the client apply an optimistic award that matches the server's.
+    points_per_analysis: int
     badges: list[Badge]

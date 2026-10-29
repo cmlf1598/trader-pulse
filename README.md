@@ -40,7 +40,7 @@ The API's bare URL returns a small JSON index (name, version, health link). All 
 - **Watchlist grid.** One card per stock or crypto asset, showing price, daily change, volume and a 5-day sparkline. Add any Yahoo symbol (`AAPL`, `BTC-USD`, `EURUSD=X`, `^GSPC`) or remove one.
 - **Price charts.** Recharts area chart with 1D / 5D / 1M / 6M / 1A ranges. The line turns green or red with the period's trend.
 - **AI sentiment widget.** Gemini combines real price action with recent headlines and returns a validated, structured verdict: sentiment, confidence, justification and key factors. Results are color-coded and list their sources. "Reanalizar" forces a fresh analysis.
-- **Gamification sidebar.** Shows "Nivel de Inversionista", "Puntos de Análisis" and badges. Every fresh analysis earns +10 points.
+- **Gamification.** The sidebar shows "Nivel de Inversionista" with a progress bar, "Puntos de Análisis" and badges. Selecting a stock credits +10 points optimistically, confirmed by the server for every fresh analysis, with a "¡XP ganada!" toast. Five analyses unlock "Experto en Mercado Alcista".
 - **Honest errors.** There is no mock or fallback market or AI data. Failures become precise HTTP errors (404, 502, 503, 504) that the UI shows as **Sonner** toasts in Spanish.
 - **Real-time polling.** SWR polls quotes every 60s and deduplicates requests across components.
 - **Fail-fast configuration.** **Pydantic Settings** refuses to start the backend without `GEMINI_API_KEY`, and **Zod** fails the frontend build without `NEXT_PUBLIC_API_URL`.

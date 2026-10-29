@@ -105,7 +105,8 @@ sequenceDiagram
         G-->>A: JSON verdict
         A->>A: validate · cache · +10 points
         A-->>S: 200 {…, cached: false}
-        S->>A: revalidate GET /gamification/status
+        S->>A: revalidate GET /gamification (replaces the optimistic +10)
+        S-->>U: toast "¡XP ganada!" (+ level-up / badge toasts)
     end
     S-->>U: chart + color-coded verdict render
 ```

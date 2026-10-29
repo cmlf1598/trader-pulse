@@ -134,6 +134,7 @@ export function gamificationFixture(
     next_level_points: 150,
     progress: 0.7,
     analyses_count: 9,
+    points_per_analysis: 10,
     badges: [
       {
         id: "first_analysis",

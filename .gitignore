@@ -3,6 +3,9 @@
 Thumbs.db
 .idea/
 
+# Root npm workspace (frontend/ dependencies are hoisted here)
+node_modules/
+
 # Shared VS Code settings are committed; personal ones are not.
 .vscode/*
 !.vscode/launch.json

@@ -99,6 +99,8 @@ Then open **http://localhost:3000**. The API docs are at http://localhost:8080/d
 
 ## ✅ Quality gates
 
+The repo root is an npm workspace over `frontend/`, so the frontend can also be installed and tested from the root: `npm install && npm test`. The root pins `react`/`react-dom` to the frontend's exact versions so only one copy of React is installed; keep them in sync when upgrading.
+
 ```bash
 # backend/
 uv run ruff check . && uv run ruff format --check . && uv run pytest

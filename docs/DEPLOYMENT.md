@@ -138,7 +138,7 @@ Checks 3–7 cover the server side of the handshake; check 10 is the human end-t
 | 7 | ✅ `200`, Gemini returned `neutral` / 0.65 with justification and key factors; cached repeat 0.3 s |
 | 8 | ✅ `200` |
 | 9 | ✅ Cloud Run hostname present in the production JS bundle |
-| 10 | ⏳ Pending a manual browser check |
+| 10 | ✅ Confirmed manually in the browser: dashboard loads and talks to the API |
 
 ### Results — 2026-10-28 (`GET /` index, revision `traderpulse-api-00003-448`)
 

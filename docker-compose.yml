@@ -1,0 +1,54 @@
+# Local development: both services with hot reload.
+#
+#   cp backend/.env.example backend/.env   # set GEMINI_API_KEY
+#   docker compose up --build
+#
+# Frontend → http://localhost:3000 · Backend → http://localhost:8080 (docs at /docs)
+
+name: trader-pulse
+
+services:
+  backend:
+    build:
+      context: ./backend
+      target: dev
+    env_file:
+      - path: ./backend/.env
+        required: true
+    environment:
+      ENVIRONMENT: development
+      FRONTEND_URL: http://localhost:3000
+    ports:
+      - "8080:8080"
+    volumes:
+      # Hot reload: uvicorn --reload watches the mounted source.
+      - ./backend/app:/app/app
+    healthcheck:
+      test:
+        - CMD
+        - python
+        - -c
+        - "import urllib.request; urllib.request.urlopen('http://localhost:8080/api/v1/health', timeout=3)"
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 15s
+
+  frontend:
+    build:
+      context: ./frontend
+    environment:
+      # The *browser* calls the API (direct-to-API architecture), so this is the host-visible URL,
+      # not the compose service name.
+      NEXT_PUBLIC_API_URL: http://localhost:8080
+      NEXT_PUBLIC_POLL_INTERVAL_MS: "60000"
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./frontend:/app
+      # Keep the container's own node_modules and build cache, not the host's.
+      - /app/node_modules
+      - /app/.next
+    depends_on:
+      backend:
+        condition: service_healthy

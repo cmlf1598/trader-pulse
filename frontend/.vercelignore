@@ -1,0 +1,7 @@
+# Vercel builds from source with its own Project env vars; never upload local env files.
+.env*
+!.env.example
+node_modules
+.next
+coverage
+tsconfig.tsbuildinfo

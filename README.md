@@ -1,0 +1,99 @@
+# TraderPulse
+
+**TraderPulse** is a dark-themed SaaS dashboard for real-time market analysis. It streams quotes from **Yahoo Finance**, charts price trends, and asks **Gemini 3 Flash** for an AI sentiment verdict (Alcista / Bajista / Neutral) with a short justification in Spanish. Analysis points and badges add a light gamification layer.
+
+![TraderPulse dashboard](docs/images/dashboard.png)
+
+> The UI and every user-facing message are in **Spanish**. Code, identifiers, comments and all documentation are in **English**.
+
+---
+
+## 📚 Documentation map (Hub & Spoke)
+
+| Start here | What it covers |
+|---|---|
+| **[ONBOARDING.md](ONBOARDING.md)** | The hub. Prerequisites, a 5-minute quick start, shared conventions, and links to every guide. |
+| **[ARCHITECTURE.md](ARCHITECTURE.md)** | System-level flow, Mermaid diagrams, and cross-cutting decision records (ADRs). |
+
+| | Backend (FastAPI) | Frontend (Next.js) |
+|---|---|---|
+| Overview & reference | [backend/README.md](backend/README.md): features, **API reference**, configuration | [frontend/README.md](frontend/README.md): features, **component library**, hooks |
+| How to work on it | [backend/ONBOARDING.md](backend/ONBOARDING.md): structure deep dive, workflows, debugging | [frontend/ONBOARDING.md](frontend/ONBOARDING.md): structure deep dive, workflows, debugging |
+| How it is built | [backend/ARCHITECTURE.md](backend/ARCHITECTURE.md): layers, error mapping, ADRs | [frontend/ARCHITECTURE.md](frontend/ARCHITECTURE.md): RSC shell, SWR data flow, ADRs |
+
+---
+
+## ✨ Features
+
+- **Live ticker tape.** An infinite marquee of quotes that pauses on hover. Clicking a symbol retargets the main chart and the AI widget.
+- **Watchlist grid.** One card per stock or crypto asset, showing price, daily change, volume and a 5-day sparkline. Add any Yahoo symbol (`AAPL`, `BTC-USD`, `EURUSD=X`, `^GSPC`) or remove one.
+- **Price charts.** Recharts area chart with 1D / 5D / 1M / 6M / 1A ranges. The line turns green or red with the period's trend.
+- **AI sentiment widget.** Gemini combines real price action with recent headlines and returns a validated, structured verdict: sentiment, confidence, justification and key factors. Results are color-coded and list their sources. "Reanalizar" forces a fresh analysis.
+- **Gamification sidebar.** Shows "Nivel de Inversionista", "Puntos de Análisis" and badges. Every fresh analysis earns +10 points.
+- **Honest errors.** There is no mock or fallback market or AI data. Failures become precise HTTP errors (404, 502, 503, 504) that the UI shows as **Sonner** toasts in Spanish.
+- **Real-time polling.** SWR polls quotes every 60s and deduplicates requests across components.
+- **Fail-fast configuration.** **Pydantic Settings** refuses to start the backend without `GEMINI_API_KEY`, and **Zod** fails the frontend build without `NEXT_PUBLIC_API_URL`.
+
+## 🧱 Stack
+
+| Layer | Technology |
+|---|---|
+| Frontend | Next.js 16 (App Router, React 19, Cache Components), Tailwind CSS v4, shadcn/ui (Base UI), Lucide React, SWR, Sonner, Recharts, Zod |
+| Backend | Python 3.12, FastAPI, Uvicorn, Pydantic v2 + pydantic-settings (python-dotenv), yfinance, google-genai |
+| AI | Gemini 3 Flash (`gemini-3-flash-preview`) with structured JSON output |
+| Quality | Ruff (backend lint and format), ESLint + Prettier (frontend), Pytest + httpx, Vitest + React Testing Library |
+| Delivery | Docker → Google Cloud Run (backend), Vercel (frontend), docker-compose for local development |
+
+## 🗂️ Repository layout
+
+```
+trader-pulse/
+├── README.md · ONBOARDING.md · ARCHITECTURE.md   ← hub docs
+├── docker-compose.yml                           ← local dev, both services with hot reload
+├── .vscode/launch.json                          ← debug configs (backend, frontend, tests, full stack)
+├── docs/images/                                 ← screenshots used by the docs
+├── backend/                                     ← FastAPI service (see backend/README.md)
+│   ├── app/{core,api,services,schemas}/
+│   ├── tests/
+│   └── Dockerfile                               ← builder / dev / runtime (Cloud Run)
+└── frontend/                                    ← Next.js app (see frontend/README.md)
+    ├── src/{app,components,hooks,lib}/
+    ├── src/__tests__/
+    └── Dockerfile                               ← dev-only image for docker-compose
+```
+
+## 🚀 Quick start
+
+You need a Gemini API key from [Google AI Studio](https://aistudio.google.com/apikey).
+
+**With Docker:**
+
+```bash
+cp backend/.env.example backend/.env    # then set GEMINI_API_KEY
+docker compose up --build
+```
+
+**Without Docker** (uv + Node 24):
+
+```bash
+# terminal 1
+cd backend && cp .env.example .env && uv sync && uv run python -m app
+# terminal 2
+cd frontend && cp .env.example .env.local && npm install && npm run dev
+```
+
+Then open **http://localhost:3000**. The API docs are at http://localhost:8080/docs. The full walkthrough is in [ONBOARDING.md](ONBOARDING.md).
+
+## ✅ Quality gates
+
+```bash
+# backend/
+uv run ruff check . && uv run ruff format --check . && uv run pytest
+
+# frontend/
+npm run lint && npm run format:check && npm run typecheck && npm test && npm run build
+```
+
+## ⚠️ Disclaimer
+
+TraderPulse is for informational purposes only. Yahoo Finance quotes may be delayed, and AI-generated analysis is **not financial advice**.

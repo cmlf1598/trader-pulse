@@ -1,0 +1,19 @@
+# Per-app ignores live in backend/ and frontend/ as well.
+.DS_Store
+Thumbs.db
+.idea/
+
+# Shared VS Code settings are committed; personal ones are not.
+.vscode/*
+!.vscode/launch.json
+!.vscode/extensions.json
+
+# Backend (Python)
+backend/.venv/
+backend/.env
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+.coverage
+htmlcov/

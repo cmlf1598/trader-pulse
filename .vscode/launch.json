@@ -1,0 +1,81 @@
+{
+  // Debug configurations referenced by ONBOARDING.md, backend/ONBOARDING.md and
+  // frontend/ONBOARDING.md. Open the repository root (trader-pulse/) in VS Code.
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Backend: FastAPI (debugpy)",
+      "type": "debugpy",
+      "request": "launch",
+      "module": "uvicorn",
+      "args": [
+        "app.main:create_app",
+        "--factory",
+        "--host",
+        "127.0.0.1",
+        "--port",
+        "8080",
+        "--reload"
+      ],
+      "cwd": "${workspaceFolder}/backend",
+      "python": "${workspaceFolder}/backend/.venv/Scripts/python.exe",
+      "linux": { "python": "${workspaceFolder}/backend/.venv/bin/python" },
+      "osx": { "python": "${workspaceFolder}/backend/.venv/bin/python" },
+      "envFile": "${workspaceFolder}/backend/.env",
+      "jinja": false,
+      "justMyCode": false
+    },
+    {
+      "name": "Backend: Pytest (current file)",
+      "type": "debugpy",
+      "request": "launch",
+      "module": "pytest",
+      "args": ["${file}", "-x", "-vv"],
+      "cwd": "${workspaceFolder}/backend",
+      "python": "${workspaceFolder}/backend/.venv/Scripts/python.exe",
+      "linux": { "python": "${workspaceFolder}/backend/.venv/bin/python" },
+      "osx": { "python": "${workspaceFolder}/backend/.venv/bin/python" },
+      "justMyCode": false
+    },
+    {
+      "name": "Frontend: Next.js (server-side)",
+      "type": "node-terminal",
+      "request": "launch",
+      "command": "npm run dev",
+      "cwd": "${workspaceFolder}/frontend"
+    },
+    {
+      "name": "Frontend: Next.js (client-side, Edge)",
+      "type": "msedge",
+      "request": "launch",
+      "url": "http://localhost:3000",
+      "webRoot": "${workspaceFolder}/frontend"
+    },
+    {
+      "name": "Frontend: Next.js (client-side, Chrome)",
+      "type": "chrome",
+      "request": "launch",
+      "url": "http://localhost:3000",
+      "webRoot": "${workspaceFolder}/frontend"
+    },
+    {
+      "name": "Frontend: Vitest (current file)",
+      "type": "node",
+      "request": "launch",
+      "autoAttachChildProcesses": true,
+      "program": "${workspaceFolder}/frontend/node_modules/vitest/vitest.mjs",
+      "args": ["run", "${relativeFile}"],
+      "cwd": "${workspaceFolder}/frontend",
+      "smartStep": true,
+      "skipFiles": ["<node_internals>/**"],
+      "console": "integratedTerminal"
+    }
+  ],
+  "compounds": [
+    {
+      "name": "Full stack: Backend + Frontend",
+      "configurations": ["Backend: FastAPI (debugpy)", "Frontend: Next.js (server-side)"],
+      "stopAll": true
+    }
+  ]
+}

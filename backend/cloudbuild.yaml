@@ -1,0 +1,24 @@
+# Builds the Cloud Run image (Dockerfile `runtime` target) and pushes it to Artifact Registry.
+#
+#   gcloud builds submit --config cloudbuild.yaml --substitutions=_TAG=$(date +%Y%m%d-%H%M%S) .
+
+substitutions:
+  _REGION: northamerica-south1
+  _REPO: traderpulse
+  _IMAGE: traderpulse-api
+  _TAG: latest
+
+steps:
+  - name: gcr.io/cloud-builders/docker
+    # The Dockerfile uses BuildKit features (RUN --mount=type=cache).
+    env: ["DOCKER_BUILDKIT=1"]
+    args:
+      - build
+      - --target=runtime
+      - -t=${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPO}/${_IMAGE}:${_TAG}
+      - -t=${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPO}/${_IMAGE}:latest
+      - .
+
+images:
+  - ${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPO}/${_IMAGE}:${_TAG}
+  - ${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPO}/${_IMAGE}:latest

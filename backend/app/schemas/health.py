@@ -9,3 +9,10 @@ class HealthResponse(BaseModel):
     status: Literal["active"]
     version: str
     environment: Environment
+
+
+class ServiceInfo(BaseModel):
+    name: str
+    version: str
+    health: str
+    docs: str | None

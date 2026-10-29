@@ -6,6 +6,16 @@
 
 > The UI and every user-facing message are in **Spanish**. Code, identifiers, comments and all documentation are in **English**.
 
+## 🌐 Live
+
+| | URL |
+|---|---|
+| **App** (Vercel) | https://traderpulse-ten.vercel.app |
+| **API** (Cloud Run, `northamerica-south1`) | https://traderpulse-api-549697455926.northamerica-south1.run.app |
+| API health check | https://traderpulse-api-549697455926.northamerica-south1.run.app/api/v1/health |
+
+The API's bare URL returns a small JSON index (name, version, health link). All other routes live under `/api/v1/`, and `/docs` is disabled in production. Redeploy steps and smoke tests are in [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md).
+
 ---
 
 ## 📚 Documentation map (Hub & Spoke)
@@ -14,6 +24,7 @@
 |---|---|
 | **[ONBOARDING.md](ONBOARDING.md)** | The hub. Prerequisites, a 5-minute quick start, shared conventions, and links to every guide. |
 | **[ARCHITECTURE.md](ARCHITECTURE.md)** | System-level flow, Mermaid diagrams, and cross-cutting decision records (ADRs). |
+| **[docs/DEPLOYMENT.md](docs/DEPLOYMENT.md)** | Production environment, redeploy and key-rotation steps, smoke tests. |
 
 | | Backend (FastAPI) | Frontend (Next.js) |
 |---|---|---|
@@ -42,7 +53,7 @@
 | Backend | Python 3.12, FastAPI, Uvicorn, Pydantic v2 + pydantic-settings (python-dotenv), yfinance, google-genai |
 | AI | Gemini 3 Flash (`gemini-3-flash-preview`) with structured JSON output |
 | Quality | Ruff (backend lint and format), ESLint + Prettier (frontend), Pytest + httpx, Vitest + React Testing Library |
-| Delivery | Docker → Google Cloud Run (backend), Vercel (frontend), docker-compose for local development |
+| Delivery | Cloud Build → Artifact Registry → Google Cloud Run with the Gemini key in Secret Manager (backend), Vercel (frontend), docker-compose for local development |
 
 ## 🗂️ Repository layout
 
@@ -51,11 +62,13 @@ trader-pulse/
 ├── README.md · ONBOARDING.md · ARCHITECTURE.md   ← hub docs
 ├── docker-compose.yml                           ← local dev, both services with hot reload
 ├── .vscode/launch.json                          ← debug configs (backend, frontend, tests, full stack)
+├── docs/DEPLOYMENT.md                           ← production runbook and smoke tests
 ├── docs/images/                                 ← screenshots used by the docs
 ├── backend/                                     ← FastAPI service (see backend/README.md)
 │   ├── app/{core,api,services,schemas}/
 │   ├── tests/
-│   └── Dockerfile                               ← builder / dev / runtime (Cloud Run)
+│   ├── Dockerfile                               ← builder / dev / runtime (Cloud Run)
+│   └── cloudbuild.yaml                          ← Cloud Build → Artifact Registry
 └── frontend/                                    ← Next.js app (see frontend/README.md)
     ├── src/{app,components,hooks,lib}/
     ├── src/__tests__/

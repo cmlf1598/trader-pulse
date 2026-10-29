@@ -8,6 +8,7 @@ from google import genai
 from google.genai import types
 
 from app import __version__
+from app.api.root import router as root_router
 from app.api.v1 import router as v1_router
 from app.core.config import Settings, get_settings
 from app.core.errors import register_exception_handlers
@@ -90,5 +91,6 @@ def create_app(
         max_age=600,
     )
     register_exception_handlers(app)
+    app.include_router(root_router)
     app.include_router(v1_router)
     return app

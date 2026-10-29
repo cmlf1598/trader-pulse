@@ -50,7 +50,7 @@ All settings are environment variables, validated by `app/core/config.py` at sta
 
 ## API reference
 
-Base path: **`/api/v1`**. All responses are JSON. Interactive OpenAPI docs are at `/docs` (development only).
+Base path: **`/api/v1`** (plus the `GET /` index). All responses are JSON. Interactive OpenAPI docs are at `/docs` (development only).
 
 ### Error envelope
 
@@ -72,6 +72,19 @@ Every non-2xx response has this shape:
 | 502 | `ai_invalid_response` | Gemini returned empty or schema-violating JSON |
 | 503 | `rate_limited` | Yahoo or Gemini throttled the request; see the `Retry-After` header (seconds) |
 | 504 | `upstream_timeout` | Yahoo or Gemini exceeded `UPSTREAM_TIMEOUT_SECONDS` |
+
+### `GET /`
+
+Service index, so the bare service URL answers with something useful. Links are absolute; `docs` is `null` in production.
+
+```json
+{
+  "name": "TraderPulse API",
+  "version": "1.0.0",
+  "health": "https://traderpulse-api-549697455926.northamerica-south1.run.app/api/v1/health",
+  "docs": null
+}
+```
 
 ### `GET /api/v1/health`
 

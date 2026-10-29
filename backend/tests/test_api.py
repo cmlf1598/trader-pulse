@@ -1,7 +1,10 @@
 import pytest
-from httpx import AsyncClient
+from httpx import ASGITransport, AsyncClient
 
-from tests.conftest import FRONTEND_URL
+from app.main import create_app
+from app.services.ai_service import AIService
+from app.services.market_service import MarketService
+from tests.conftest import FRONTEND_URL, SettingsFactory
 from tests.fakes import FakeGenAIClient, FakeMarketBackend
 
 
@@ -10,6 +13,32 @@ async def test_health(client: AsyncClient) -> None:
 
     assert response.status_code == 200
     assert response.json() == {"status": "active", "version": "1.0.0", "environment": "production"}
+
+
+async def test_root_links_to_health_without_docs_in_production(client: AsyncClient) -> None:
+    response = await client.get("/")
+
+    assert response.status_code == 200
+    assert response.json() == {
+        "name": "TraderPulse API",
+        "version": "1.0.0",
+        "health": "http://testserver/api/v1/health",
+        "docs": None,
+    }
+
+
+async def test_root_links_to_docs_in_development(
+    make_settings: SettingsFactory, market_service: MarketService, ai_service: AIService
+) -> None:
+    app = create_app(
+        make_settings(environment="development"),
+        market_service=market_service,
+        ai_service=ai_service,
+    )
+    async with AsyncClient(transport=ASGITransport(app=app), base_url="http://testserver") as c:
+        response = await c.get("/")
+
+    assert response.json()["docs"] == "http://testserver/docs"
 
 
 # ---- stocks -------------------------------------------------------------------------------

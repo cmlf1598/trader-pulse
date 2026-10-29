@@ -113,6 +113,7 @@ WEB=https://traderpulse-ten.vercel.app
 | # | Check | Command | Expected |
 | --- | --- | --- | --- |
 | 1 | Backend liveness | `curl -s $API/api/v1/health` | `200`, `{"status":"active","version":"1.0.0","environment":"production"}` |
+| 1b | Service index | `curl -s $API/` | `200`, `name`, `version`, absolute `https://…/api/v1/health` link, `"docs": null` |
 | 2 | Secret mounted | (implied by 1) | The service only boots if `GEMINI_API_KEY` resolved and settings validated |
 | 3 | CORS allows the frontend | `curl -si -X OPTIONS $API/api/v1/stocks/AAPL -H "Origin: $WEB" -H "Access-Control-Request-Method: GET"` | `200`, `access-control-allow-origin: $WEB` |
 | 4 | CORS rejects others | same, with `-H "Origin: https://evil.example"` | `400`, no `access-control-allow-origin` |
@@ -138,3 +139,12 @@ Checks 3–7 cover the server side of the handshake; check 10 is the human end-t
 | 8 | ✅ `200` |
 | 9 | ✅ Cloud Run hostname present in the production JS bundle |
 | 10 | ⏳ Pending a manual browser check |
+
+### Results — 2026-10-28 (`GET /` index, revision `traderpulse-api-00003-448`)
+
+| # | Result |
+| --- | --- |
+| 1 | ✅ `200` `{"status":"active","version":"1.0.0","environment":"production"}` |
+| 1b | ✅ `200`, health link is `https://traderpulse-api-549697455926.northamerica-south1.run.app/api/v1/health`, `docs` is `null` |
+| 5 | ✅ `404` |
+| — | ✅ `ENVIRONMENT`, `FRONTEND_URL` and the `GEMINI_API_KEY` secret mapping carried over to the new revision |

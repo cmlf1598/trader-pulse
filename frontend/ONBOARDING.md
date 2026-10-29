@@ -228,7 +228,7 @@ npx vitest run src/__tests__/sentiment-widget.test.tsx -t "Reanalizar"
 1. Import the repository in Vercel and set **Root Directory** to `frontend`. The framework (Next.js) is detected automatically.
 2. Under **Environment Variables**, set `NEXT_PUBLIC_API_URL=https://<your-cloud-run-url>` (and optionally `NEXT_PUBLIC_POLL_INTERVAL_MS`) for Production, and for Preview if you have a staging API.
 3. Deploy. The build fails if the env is invalid, so a broken config never goes live.
-4. Set the backend's `FRONTEND_URL` to the production domain (e.g. `https://traderpulse.vercel.app`) and redeploy Cloud Run. Otherwise the browser's calls are blocked by CORS.
+4. Set the backend's `FRONTEND_URL` to the production domain (currently `https://traderpulse-ten.vercel.app`; see [docs/DEPLOYMENT.md](../docs/DEPLOYMENT.md)) and redeploy Cloud Run. Otherwise the browser's calls are blocked by CORS.
 5. **Preview deployments** get unique URLs that are _not_ in the backend allow-list. Either point Preview at a development backend whose `FRONTEND_URL` matches your preview domain, or test previews against a local API.
 
 Nothing about the production build depends on `Dockerfile`, which is only for `docker compose`.

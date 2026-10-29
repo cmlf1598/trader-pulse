@@ -3,7 +3,7 @@
 This document describes TraderPulse **as a system**: how the two apps and the external providers fit together, how a request flows end to end, and the cross-cutting decisions behind them. Each app's internals are covered in its own architecture guide:
 
 - [backend/ARCHITECTURE.md](backend/ARCHITECTURE.md): layers, error mapping, sentiment pipeline, caching.
-- [frontend/ARCHITECTURE.md](frontend/ARCHITECTURE.md): RSC shell, client islands, SWR data flow, state.
+- [docs/frontend/ARCHITECTURE.md](docs/frontend/ARCHITECTURE.md): RSC shell, client islands, SWR data flow, state.
 
 ---
 
@@ -173,13 +173,13 @@ flowchart LR
 ```mermaid
 flowchart LR
     Dev["Developer"] -- git push --> Repo[("Git repository")]
-    Repo -- "Vercel Git integration<br/>(Root Directory: frontend)" --> V["Vercel<br/>static shell + JS bundles"]
+    Repo -- "Vercel Git integration<br/>(Root Directory: repo root)" --> V["Vercel<br/>static shell + JS bundles"]
     Repo -- "docker build backend/<br/>(target: runtime)" --> AR[("Artifact Registry")]
     AR --> CR["Cloud Run service<br/>ENVIRONMENT=production<br/>FRONTEND_URL=https://…vercel.app<br/>GEMINI_API_KEY (secret)"]
     V -. "NEXT_PUBLIC_API_URL=https://…run.app<br/>(inlined at build time)" .-> CR
 ```
 
-Deploy the backend first, because the frontend needs its URL at build time. Then set `FRONTEND_URL` on Cloud Run to the Vercel production URL. Step-by-step instructions are in [backend/ONBOARDING.md → Deploying](backend/ONBOARDING.md#8-deploying-to-google-cloud-run) and [frontend/ONBOARDING.md → Deploying](frontend/ONBOARDING.md#8-deploying-to-vercel). The live environment, redeploy commands and smoke tests are in [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md).
+Deploy the backend first, because the frontend needs its URL at build time. Then set `FRONTEND_URL` on Cloud Run to the Vercel production URL. Step-by-step instructions are in [backend/ONBOARDING.md → Deploying](backend/ONBOARDING.md#8-deploying-to-google-cloud-run) and [frontend/ONBOARDING.md → Deploying](docs/frontend/ONBOARDING.md#8-deploying-to-vercel). The live environment, redeploy commands and smoke tests are in [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md).
 
 ---
 

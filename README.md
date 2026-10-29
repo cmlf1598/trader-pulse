@@ -28,9 +28,9 @@ The API's bare URL returns a small JSON index (name, version, health link). All 
 
 | | Backend (FastAPI) | Frontend (Next.js) |
 |---|---|---|
-| Overview & reference | [backend/README.md](backend/README.md): features, **API reference**, configuration | [frontend/README.md](frontend/README.md): features, **component library**, hooks |
-| How to work on it | [backend/ONBOARDING.md](backend/ONBOARDING.md): structure deep dive, workflows, debugging | [frontend/ONBOARDING.md](frontend/ONBOARDING.md): structure deep dive, workflows, debugging |
-| How it is built | [backend/ARCHITECTURE.md](backend/ARCHITECTURE.md): layers, error mapping, ADRs | [frontend/ARCHITECTURE.md](frontend/ARCHITECTURE.md): RSC shell, SWR data flow, ADRs |
+| Overview & reference | [backend/README.md](backend/README.md): features, **API reference**, configuration | [docs/frontend/README.md](docs/frontend/README.md): features, **component library**, hooks |
+| How to work on it | [backend/ONBOARDING.md](backend/ONBOARDING.md): structure deep dive, workflows, debugging | [docs/frontend/ONBOARDING.md](docs/frontend/ONBOARDING.md): structure deep dive, workflows, debugging |
+| How it is built | [backend/ARCHITECTURE.md](backend/ARCHITECTURE.md): layers, error mapping, ADRs | [docs/frontend/ARCHITECTURE.md](docs/frontend/ARCHITECTURE.md): RSC shell, SWR data flow, ADRs |
 
 ---
 
@@ -57,22 +57,25 @@ The API's bare URL returns a small JSON index (name, version, health link). All 
 
 ## 🗂️ Repository layout
 
+The Next.js frontend lives at the repository root (the standard `create-next-app` layout, entry point `src/app/page.tsx`), and the FastAPI backend lives in `backend/`.
+
 ```
 trader-pulse/
 ├── README.md · ONBOARDING.md · ARCHITECTURE.md   ← hub docs
+├── package.json · next.config.ts · tsconfig.json ← Next.js app (frontend) at the root
+├── src/{app,components,hooks,lib}/              ← frontend source (see docs/frontend/README.md)
+├── src/__tests__/                               ← Vitest suites
+├── Dockerfile.frontend                          ← dev-only frontend image for docker-compose
 ├── docker-compose.yml                           ← local dev, both services with hot reload
 ├── .vscode/launch.json                          ← debug configs (backend, frontend, tests, full stack)
 ├── docs/DEPLOYMENT.md                           ← production runbook and smoke tests
+├── docs/frontend/                               ← frontend README, onboarding, architecture
 ├── docs/images/                                 ← screenshots used by the docs
-├── backend/                                     ← FastAPI service (see backend/README.md)
-│   ├── app/{core,api,services,schemas}/
-│   ├── tests/
-│   ├── Dockerfile                               ← builder / dev / runtime (Cloud Run)
-│   └── cloudbuild.yaml                          ← Cloud Build → Artifact Registry
-└── frontend/                                    ← Next.js app (see frontend/README.md)
-    ├── src/{app,components,hooks,lib}/
-    ├── src/__tests__/
-    └── Dockerfile                               ← dev-only image for docker-compose
+└── backend/                                     ← FastAPI service (see backend/README.md)
+    ├── app/{core,api,services,schemas}/
+    ├── tests/
+    ├── Dockerfile                               ← builder / dev / runtime (Cloud Run)
+    └── cloudbuild.yaml                          ← Cloud Build → Artifact Registry
 ```
 
 ## 🚀 Quick start
@@ -91,21 +94,19 @@ docker compose up --build
 ```bash
 # terminal 1
 cd backend && cp .env.example .env && uv sync && uv run python -m app
-# terminal 2
-cd frontend && cp .env.example .env.local && npm install && npm run dev
+# terminal 2 (repo root)
+cp .env.example .env.local && npm install && npm run dev
 ```
 
 Then open **http://localhost:3000**. The API docs are at http://localhost:8080/docs. The full walkthrough is in [ONBOARDING.md](ONBOARDING.md).
 
 ## ✅ Quality gates
 
-The repo root is an npm workspace over `frontend/`, so the frontend can also be installed and tested from the root: `npm install && npm test`. The root pins `react`/`react-dom` to the frontend's exact versions so only one copy of React is installed; keep them in sync when upgrading.
-
 ```bash
 # backend/
 uv run ruff check . && uv run ruff format --check . && uv run pytest
 
-# frontend/
+# repo root (frontend)
 npm run lint && npm run format:check && npm run typecheck && npm test && npm run build
 ```
 

@@ -1,19 +1,30 @@
-# Per-app ignores live in backend/ and frontend/ as well.
+# The Next.js frontend lives at the repo root (src/); the FastAPI backend lives in backend/.
 .DS_Store
 Thumbs.db
 .idea/
-
-# Root npm workspace (frontend/ dependencies are hoisted here)
-node_modules/
 
 # Shared VS Code settings are committed; personal ones are not.
 .vscode/*
 !.vscode/launch.json
 !.vscode/extensions.json
 
+# Frontend (Next.js)
+/node_modules
+/.next/
+/out/
+/build
+/coverage
+*.tsbuildinfo
+next-env.d.ts
+*.pem
+npm-debug.log*
+.vercel
+# Env files (only the example is committed)
+.env*
+!.env.example
+
 # Backend (Python)
 backend/.venv/
-backend/.env
 __pycache__/
 *.py[cod]
 .pytest_cache/

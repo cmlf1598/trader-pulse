@@ -6,9 +6,9 @@ Welcome! This is the **hub** of the handbook. It gets you from zero to a running
 |---|---|
 | Understand the whole system first | [ARCHITECTURE.md](ARCHITECTURE.md) |
 | Work on the API, Yahoo Finance or Gemini integration | [backend/ONBOARDING.md](backend/ONBOARDING.md) → [backend/ARCHITECTURE.md](backend/ARCHITECTURE.md) |
-| Work on the dashboard UI, charts or data hooks | [frontend/ONBOARDING.md](frontend/ONBOARDING.md) → [frontend/ARCHITECTURE.md](frontend/ARCHITECTURE.md) |
+| Work on the dashboard UI, charts or data hooks | [docs/frontend/ONBOARDING.md](docs/frontend/ONBOARDING.md) → [docs/frontend/ARCHITECTURE.md](docs/frontend/ARCHITECTURE.md) |
 | Look up an endpoint or error code | [backend/README.md](backend/README.md#api-reference) |
-| Look up a component or hook | [frontend/README.md](frontend/README.md#component-library) |
+| Look up a component or hook | [docs/frontend/README.md](docs/frontend/README.md#component-library) |
 
 ---
 
@@ -55,7 +55,7 @@ docker compose up --build
 
 - Frontend: <http://localhost:3000>
 - Backend: <http://localhost:8080/api/v1/health>, with interactive docs at <http://localhost:8080/docs>
-- Editing `backend/app/**` reloads uvicorn, and editing `frontend/src/**` triggers Next.js Fast Refresh.
+- Editing `backend/app/**` reloads uvicorn, and editing `src/**` triggers Next.js Fast Refresh.
 
 ### Option B: Native (fastest feedback, best for debugging)
 
@@ -69,7 +69,7 @@ uv run python -m app                       # http://localhost:8080
 
 ```bash
 # Terminal 2: frontend
-cd trader-pulse/frontend
+cd trader-pulse
 cp .env.example .env.local                 # NEXT_PUBLIC_API_URL=http://localhost:8080
 npm install
 npm run dev                                # http://localhost:3000
@@ -121,7 +121,7 @@ Every backend failure returns the same envelope. `code` is a stable machine-read
 
 ### Symbols
 
-Yahoo Finance symbols are upper-cased and validated against `^[A-Z0-9.\-=^]{1,15}$` on **both** sides: `backend/app/api/deps.py` and `frontend/src/lib/symbols.ts`. Crypto uses the `-USD` suffix (`BTC-USD`), FX uses `=X` (`EURUSD=X`), and indices use `^` (`^GSPC`).
+Yahoo Finance symbols are upper-cased and validated against `^[A-Z0-9.\-=^]{1,15}$` on **both** sides: `backend/app/api/deps.py` and `src/lib/symbols.ts`. Crypto uses the `-USD` suffix (`BTC-USD`), FX uses `=X` (`EURUSD=X`), and indices use `^` (`^GSPC`).
 
 ### Code quality
 
@@ -134,7 +134,7 @@ Run the full gate for the app you touched before opening a PR (see [README → Q
 
 ### Contracts that must change together
 
-When you change a response model in `backend/app/schemas/*.py`, update the matching Zod schema in `frontend/src/lib/api/schemas.ts` in the same PR. If you don't, the frontend rejects the response as `invalid_response`. That is intentional: drift gets caught instead of rendering garbage.
+When you change a response model in `backend/app/schemas/*.py`, update the matching Zod schema in `src/lib/api/schemas.ts` in the same PR. If you don't, the frontend rejects the response as `invalid_response`. That is intentional: drift gets caught instead of rendering garbage.
 
 ---
 
@@ -160,7 +160,7 @@ App-specific tips (yfinance debug mode, inspecting the Gemini prompt, SWR cache 
 | Symptom | Fix |
 |---|---|
 | Backend exits with `Invalid configuration, refusing to start … gemini_api_key Field required` | Create `backend/.env` and set `GEMINI_API_KEY`. |
-| `next dev`/`next build` fails with `Invalid environment variables … NEXT_PUBLIC_API_URL` | Create `frontend/.env.local` from `.env.example`. |
+| `next dev`/`next build` fails with `Invalid environment variables … NEXT_PUBLIC_API_URL` | Create `.env.local` from `.env.example`. |
 | Browser console: *blocked by CORS policy* | The page origin must match `FRONTEND_URL` in `backend/.env` exactly. In development, `localhost:3000` and `127.0.0.1:3000` are always allowed. |
 | Every card shows "sin datos" and a network toast | The backend isn't running, or `NEXT_PUBLIC_API_URL` points to the wrong place. |
 | Sentiment shows "El análisis de IA no está disponible" | Invalid or expired key, or the model isn't enabled for your key. The backend log shows the exact Gemini error. |

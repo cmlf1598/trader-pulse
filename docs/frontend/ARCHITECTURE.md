@@ -1,8 +1,8 @@
 # Frontend Architecture: TraderPulse Dashboard
 
-How the Next.js app is put together: rendering model, data flow, state, error handling and styling, plus the decisions behind them. For the system-wide view see the [root ARCHITECTURE.md](../ARCHITECTURE.md).
+How the Next.js app is put together: rendering model, data flow, state, error handling and styling, plus the decisions behind them. For the system-wide view see the [root ARCHITECTURE.md](../../ARCHITECTURE.md).
 
-← [Hub](../ONBOARDING.md) · [Frontend README](README.md) · [Frontend onboarding](ONBOARDING.md)
+← [Hub](../../ONBOARDING.md) · [Frontend README](README.md) · [Frontend onboarding](ONBOARDING.md)
 
 ---
 
@@ -30,7 +30,7 @@ flowchart TB
 
 - The route `/` is **fully static** (`○` in `next build`). The HTML shell, including loading skeletons, is served from Vercel's CDN with no server compute.
 - `cacheComponents` is enabled (the Next 16 default for new apps). The page never reads request data or calls the backend on the server, so no `Suspense` or `connection()` is needed.
-- All live data is fetched **in the browser** by SWR hooks inside the `Dashboard` island, which calls the API directly. See [root ADR-002](../ARCHITECTURE.md#adr-002-browser-calls-the-api-directly-strict-cors).
+- All live data is fetched **in the browser** by SWR hooks inside the `Dashboard` island, which calls the API directly. See [root ADR-002](../../ARCHITECTURE.md#adr-002-browser-calls-the-api-directly-strict-cors).
 
 ## 2. Data flow
 

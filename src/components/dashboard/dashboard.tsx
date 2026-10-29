@@ -7,6 +7,7 @@ import type { HistoryRange } from "@/lib/api/schemas";
 
 import { GamificationSidebar } from "./gamification-sidebar";
 import { PriceChart } from "./price-chart";
+import { SECTIONS } from "./sections";
 import { SentimentWidget } from "./sentiment-widget";
 import { SymbolSearch } from "./symbol-search";
 import { TickerTape } from "./ticker-tape";
@@ -29,12 +30,19 @@ export function Dashboard() {
         <div className="min-w-0 space-y-6">
           <SymbolSearch watchlist={watchlist.symbols} onAdd={watchlist.add} />
 
-          <div className="grid gap-6 2xl:grid-cols-[minmax(0,3fr)_minmax(0,2fr)]">
+          <div
+            id={SECTIONS.market.id}
+            className="grid scroll-mt-6 gap-6 2xl:grid-cols-[minmax(0,3fr)_minmax(0,2fr)]"
+          >
             <PriceChart symbol={watchlist.selected} range={range} onRangeChange={setRange} />
             <SentimentWidget symbol={watchlist.selected} />
           </div>
 
-          <section aria-labelledby="watchlist-heading" className="space-y-3">
+          <section
+            id={SECTIONS.watchlist.id}
+            aria-labelledby="watchlist-heading"
+            className="scroll-mt-6 space-y-3"
+          >
             <h2 id="watchlist-heading" className="text-sm font-medium text-muted-foreground">
               Tu lista de seguimiento
             </h2>
@@ -47,7 +55,11 @@ export function Dashboard() {
           </section>
         </div>
 
-        <aside aria-label="Gamificación" className="lg:sticky lg:top-6 lg:self-start">
+        <aside
+          id={SECTIONS.progress.id}
+          aria-label="Gamificación"
+          className="scroll-mt-6 lg:sticky lg:top-6 lg:self-start"
+        >
           <GamificationSidebar />
         </aside>
       </div>

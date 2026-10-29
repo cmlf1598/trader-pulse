@@ -36,7 +36,8 @@ services:
 
   frontend:
     build:
-      context: ./frontend
+      context: .
+      dockerfile: Dockerfile.frontend
     environment:
       # The *browser* calls the API (direct-to-API architecture), so this is the host-visible URL,
       # not the compose service name.
@@ -45,7 +46,7 @@ services:
     ports:
       - "3000:3000"
     volumes:
-      - ./frontend:/app
+      - .:/app
       # Keep the container's own node_modules and build cache, not the host's.
       - /app/node_modules
       - /app/.next

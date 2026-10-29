@@ -127,7 +127,7 @@ Example: `GET /api/v1/stocks/{symbol}/profile` returning sector and industry.
    A brand-new router file must also be included in `app/api/v1/__init__.py`.
 4. **Fake.** If the service uses a new provider attribute (`info`), add it to `FakeTicker` in `tests/fakes.py`.
 5. **Tests.** Add service tests (happy path, not found, outage) to `test_market_service.py`, and endpoint tests (status codes, body, envelope) to `test_api.py`.
-6. **Contract.** Add the Zod schema and an `api.profile()` call in `frontend/src/lib/api/` (see the [frontend workflow](../frontend/ONBOARDING.md#32-consume-a-new-endpoint)).
+6. **Contract.** Add the Zod schema and an `api.profile()` call in `src/lib/api/` (see the [frontend workflow](../docs/frontend/ONBOARDING.md#32-consume-a-new-endpoint)).
 7. **Docs.** Add the endpoint to the [API reference](README.md#api-reference).
 
 ### 3.2 Add a configuration setting
@@ -142,7 +142,7 @@ Example: `GET /api/v1/stocks/{symbol}/profile` returning sector and industry.
 1. Subclass `AppError` in `app/core/errors.py` with `status_code`, a stable snake_case `code` and a Spanish `message`.
 2. Raise it from a service. The global handler renders it automatically.
 3. Add it to the error table in [README](README.md#error-envelope) and to `responses.py` if it applies to a route group.
-4. Optionally add a fallback message to `frontend/src/lib/api/errors.ts` (`FALLBACK_MESSAGES`).
+4. Optionally add a fallback message to `src/lib/api/errors.ts` (`FALLBACK_MESSAGES`).
 
 ### 3.4 Change the Gemini model or prompt
 

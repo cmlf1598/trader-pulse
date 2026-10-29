@@ -1,0 +1,10 @@
+# Vercel builds only the Next.js app at the repo root, with its own Project env vars.
+# Never upload local env files, and skip the backend (deployed to Cloud Run) and docs.
+.env*
+!.env.example
+node_modules
+.next
+coverage
+*.tsbuildinfo
+backend
+docs

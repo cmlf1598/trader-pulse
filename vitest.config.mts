@@ -1,9 +1,21 @@
 import { defineConfig } from "vitest/config";
 
-// Lets `npx vitest run` / `npm test` work from the repo root. The frontend's own config
-// (jsdom, setup file, `@/*` alias, test env) drives the run.
+// Vite 8 transforms JSX/TSX with Oxc and resolves the `@/*` alias from tsconfig natively,
+// so no @vitejs/plugin-react or vite-tsconfig-paths is needed.
 export default defineConfig({
+  resolve: {
+    tsconfigPaths: true,
+  },
   test: {
-    projects: ["frontend"],
+    environment: "jsdom",
+    setupFiles: ["./vitest.setup.ts"],
+    include: ["src/**/*.test.{ts,tsx}"],
+    env: {
+      NEXT_PUBLIC_API_URL: "http://api.test",
+      NEXT_PUBLIC_POLL_INTERVAL_MS: "60000",
+    },
+    clearMocks: true,
+    restoreMocks: true,
+    unstubGlobals: true,
   },
 });

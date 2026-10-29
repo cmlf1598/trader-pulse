@@ -52,7 +52,7 @@ gcloud secrets add-iam-policy-binding traderpulse-gemini-key \
 gcloud artifacts repositories create traderpulse --repository-format=docker --location=$REGION
 ```
 
-Vercel: `npx vercel link --project traderpulse` from `frontend/`, then
+Vercel: `npx vercel link --project traderpulse` from the repo root, then
 `npx vercel env add NEXT_PUBLIC_API_URL production`.
 
 ## 3. Redeploying
@@ -86,7 +86,7 @@ so instances pick up `latest`.
 
 ### Frontend
 
-From `frontend/`: `npx vercel --prod`. `NEXT_PUBLIC_API_URL` is frozen into the bundle at build
+From the repo root: `npx vercel --prod`. `NEXT_PUBLIC_API_URL` is frozen into the bundle at build
 time, so changing it on Vercel requires another `vercel --prod`.
 
 ### CORS sync

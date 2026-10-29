@@ -8,7 +8,15 @@ const eslintConfig = defineConfig([
   ...nextTs,
   // Formatting is Prettier's job; disable ESLint rules that would fight it.
   prettier,
-  globalIgnores([".next/**", "out/**", "build/**", "coverage/**", "next-env.d.ts"]),
+  globalIgnores([
+    ".next/**",
+    "out/**",
+    "build/**",
+    "coverage/**",
+    "next-env.d.ts",
+    // The Python backend (and its .venv) shares the repo but is not linted here.
+    "backend/**",
+  ]),
 ]);
 
 export default eslintConfig;

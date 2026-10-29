@@ -33,8 +33,14 @@ export function parseEnv(source: Record<string, string | undefined>): Env {
 // into the browser bundle when it sees the full member expression. This module is imported
 // by next.config.ts, so `next dev` / `next build` fail fast on a bad value.
 //
+// Under a test runner (NODE_ENV=test), a missing API URL falls back to the local backend so
+// external harnesses can import and render components; dev and builds still fail fast.
+//
 // Secrets such as GEMINI_API_KEY never belong here: everything in this file ships to the browser.
+const TEST_API_URL = "http://localhost:8080";
+
 export const env = parseEnv({
-  NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL,
+  NEXT_PUBLIC_API_URL:
+    process.env.NEXT_PUBLIC_API_URL || (process.env.NODE_ENV === "test" ? TEST_API_URL : undefined),
   NEXT_PUBLIC_POLL_INTERVAL_MS: process.env.NEXT_PUBLIC_POLL_INTERVAL_MS,
 });

@@ -2,20 +2,21 @@
 
 Everything you need to work on the Next.js app: running it, what lives where, step-by-step recipes for common changes, testing, debugging and deployment.
 
-← [Hub](../ONBOARDING.md) · [Frontend README (components & hooks)](README.md) · [Frontend architecture](ARCHITECTURE.md)
+← [Hub](../../ONBOARDING.md) · [Frontend README (components & hooks)](README.md) · [Frontend architecture](ARCHITECTURE.md)
 
 ---
 
 ## 1. Quick start
 
+The Next.js app lives at the repository root (`src/app/page.tsx` is the entry point), so run these from there:
+
 ```bash
-cd frontend
 cp .env.example .env.local      # NEXT_PUBLIC_API_URL=http://localhost:8080
 npm install
 npm run dev                     # http://localhost:3000
 ```
 
-The dashboard needs the backend running (see [backend quick start](../backend/ONBOARDING.md#1-quick-start)). Without it you'll see "sin datos" placeholders and a toast saying _"No se pudo conectar con el servidor de TraderPulse."_, which is the intended behaviour.
+The dashboard needs the backend running (see [backend quick start](../../backend/ONBOARDING.md#1-quick-start)). Without it you'll see "sin datos" placeholders and a toast saying _"No se pudo conectar con el servidor de TraderPulse."_, which is the intended behaviour.
 
 Before committing, run the quality gate:
 
@@ -30,7 +31,7 @@ npm run lint && npm run format:check && npm run typecheck && npm test && npm run
 ## 2. Project structure deep dive
 
 ```
-frontend/
+trader-pulse/                       # repo root = Next.js app (backend/ and docs/ sit alongside)
 ├── src/
 │   ├── env.ts                      # Zod env schema → typed `env` (also imported by next.config.ts)
 │   ├── app/                        # App Router
@@ -63,7 +64,7 @@ frontend/
 ├── vitest.config.mts · vitest.setup.ts   # jsdom, env, ResizeObserver stub, global sonner mock
 ├── eslint.config.mjs · .prettierrc       # lint + format (Prettier owns formatting)
 ├── components.json                 # shadcn CLI config (preset base-nova, aliases)
-├── Dockerfile                      # DEV ONLY (docker-compose); Vercel builds production
+├── Dockerfile.frontend             # DEV ONLY (docker-compose); Vercel builds production
 └── .env.example
 ```
 
@@ -225,10 +226,10 @@ npx vitest run src/__tests__/sentiment-widget.test.tsx -t "Reanalizar"
 
 ## 8. Deploying to Vercel
 
-1. Import the repository in Vercel and set **Root Directory** to `frontend`. The framework (Next.js) is detected automatically.
+1. Import the repository in Vercel and leave **Root Directory** at the repository root. The framework (Next.js) is detected automatically.
 2. Under **Environment Variables**, set `NEXT_PUBLIC_API_URL=https://<your-cloud-run-url>` (and optionally `NEXT_PUBLIC_POLL_INTERVAL_MS`) for Production, and for Preview if you have a staging API.
 3. Deploy. The build fails if the env is invalid, so a broken config never goes live.
-4. Set the backend's `FRONTEND_URL` to the production domain (currently `https://traderpulse-ten.vercel.app`; see [docs/DEPLOYMENT.md](../docs/DEPLOYMENT.md)) and redeploy Cloud Run. Otherwise the browser's calls are blocked by CORS.
+4. Set the backend's `FRONTEND_URL` to the production domain (currently `https://traderpulse-ten.vercel.app`; see [docs/DEPLOYMENT.md](../DEPLOYMENT.md)) and redeploy Cloud Run. Otherwise the browser's calls are blocked by CORS.
 5. **Preview deployments** get unique URLs that are _not_ in the backend allow-list. Either point Preview at a development backend whose `FRONTEND_URL` matches your preview domain, or test previews against a local API.
 
 Nothing about the production build depends on `Dockerfile`, which is only for `docker compose`.

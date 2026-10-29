@@ -51,6 +51,27 @@ describe("GamificationSidebar", () => {
     expect(screen.getByRole("status", { name: "Cargando progreso" })).toBeInTheDocument();
   });
 
+  it("keeps the level, progress bar, points and badges sections while loading", () => {
+    stubApi(never);
+
+    renderWithSWR(<GamificationSidebar />);
+
+    expect(screen.getByText("Nivel de Inversionista")).toBeInTheDocument();
+    expect(
+      screen.getByRole("progressbar", { name: "Progreso al siguiente nivel" }),
+    ).toBeInTheDocument();
+    expect(screen.getByText("Puntos de Análisis")).toBeInTheDocument();
+    expect(screen.getByText("Insignias")).toBeInTheDocument();
+  });
+
+  it("shows points as XP", async () => {
+    stubApi(() => json(gamificationFixture()));
+
+    renderWithSWR(<GamificationSidebar />);
+
+    expect(await screen.findByTestId("points")).toHaveTextContent("120 XP");
+  });
+
   it("shows the error message on failure", async () => {
     stubApi(() => apiError(500, "internal_error", "Ocurrió un error inesperado."));
 

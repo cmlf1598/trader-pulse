@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 
 import { env, parseEnv } from "@/env";
 
@@ -44,5 +44,14 @@ describe("parseEnv", () => {
 
   it("parses process.env at import time", () => {
     expect(env.NEXT_PUBLIC_API_URL).toBe("http://api.test");
+  });
+
+  it("falls back to the local API under a test runner instead of throwing", async () => {
+    vi.stubEnv("NEXT_PUBLIC_API_URL", "");
+    vi.resetModules();
+
+    const fresh = await import("@/env");
+
+    expect(fresh.env.NEXT_PUBLIC_API_URL).toBe("http://localhost:8080");
   });
 });

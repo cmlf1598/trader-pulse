@@ -1,0 +1,12 @@
+# Build context for Dockerfile.frontend (repo root). The backend has its own context (backend/).
+node_modules/
+.next/
+coverage/
+.env*
+!.env.example
+*.tsbuildinfo
+backend/
+docs/
+.git/
+Dockerfile.frontend
+.dockerignore

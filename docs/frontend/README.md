@@ -2,7 +2,7 @@
 
 Next.js 16 dashboard (Spanish UI, dark theme) for real-time market analysis. It renders a static Server Component shell and hydrates one client island that polls the TraderPulse API with SWR.
 
-← Back to the [hub](../ONBOARDING.md) · How to work on it: [ONBOARDING.md](ONBOARDING.md) · How it is built: [ARCHITECTURE.md](ARCHITECTURE.md)
+← Back to the [hub](../../ONBOARDING.md) · How to work on it: [ONBOARDING.md](ONBOARDING.md) · How it is built: [ARCHITECTURE.md](ARCHITECTURE.md)
 
 ---
 
